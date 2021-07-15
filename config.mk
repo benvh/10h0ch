@@ -15,7 +15,9 @@ PKGCONFIG := pkg-config
 CFLAGS = -Wall -g -std=c99 -pedantic \
 		 -I $(src_dir) \
 		 $(shell $(PKGCONFIG) --cflags sdl2 SDL2_image SDL2_ttf) \
-		 $(shell $(PKGCONFIG) --cflags fontconfig)
+		 $(shell $(PKGCONFIG) --cflags fontconfig) \
+		 $(shell $(PKGCONFIG) --cflags libpng)
 
 LDFLAGS = $(shell $(PKGCONFIG) --libs sdl2 SDL2_image SDL2_ttf) \
-		  $(shell $(PKGCONFIG) --libs fontconfig)
+		  $(shell $(PKGCONFIG) --libs fontconfig) \
+		  $(shell $(PKGCONFIG) --libs libpng)

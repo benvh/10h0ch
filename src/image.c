@@ -1,6 +1,9 @@
 #include "image.h"
 #include "rendering.h"
+
+#include <png.h>
 #include <SDL2/SDL_image.h>
+#include <stdlib.h>
 
 SDL_Surface* img_orig_surface = NULL;
 SDL_Texture* img_orig_texture = NULL;
@@ -18,6 +21,9 @@ void image_init() {
 }
 
 void image_deinit() {
+    SDL_DestroyTexture(img_edit_texture);
+    SDL_DestroyTexture(img_orig_texture);
+    SDL_FreeSurface(img_orig_surface);
     IMG_Quit();
 }
 
@@ -92,8 +98,50 @@ SDL_Surface* image_read_img_from_stdin() {
     return img_surface;
 }
 
+
 void image_write_img_to_stdout() {
+    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (png_ptr == NULL) {
+        fprintf(stderr, "could not create png_write_struct [exiting]\n");
+        exit(-1);
+    }
+
+    png_infop info_ptr = png_create_info_struct(png_ptr);
+    if (info_ptr == NULL) {
+        fprintf(stderr, "could not create png_info_struct [exiting]\n");
+        exit(-1);
+    }
+
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        fprintf(stderr, "png error [exiting]\n");
+        exit(-1);
+    }
+
+    // allocate memory to hold our pixel data and read our modified image from screen
+    uint8_t* pixel_data = (uint8_t*)malloc(img_orig_surface->w * img_orig_surface->h * 4);
+    uint32_t pixel_row_stride = img_orig_surface->w * 4;
+    SDL_Rect img_offset_rect = image_get_offset_rect();
+    SDL_SetRenderTarget(rend, NULL); // make sure our window is our render target so we read whatever is visible on screen...
+    SDL_RenderReadPixels(rend, &img_offset_rect, SDL_PIXELFORMAT_RGBA32, pixel_data, pixel_row_stride);
+
+    // build the png rows array (libpng wants an array of pointers to the first pixel of every row)
+    uint8_t** png_row_ptrs = (uint8_t**)malloc(img_orig_surface->h * sizeof(uint8_t*));
+    for(int i = 0; i < img_orig_surface->h; i++) {
+        png_row_ptrs[i] = (pixel_data + pixel_row_stride * i);
+    }
+
+    // write the png to stdout
+    png_init_io(png_ptr, stdout);
+    png_set_IHDR(png_ptr, info_ptr, img_orig_surface->w, img_orig_surface->h, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+    png_set_rows(png_ptr, info_ptr, png_row_ptrs);
+    png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+
+    // clean up after ourselves
+    free(png_row_ptrs);
+    free(pixel_data);
+    png_destroy_write_struct(&png_ptr, &info_ptr);
 }
+
 
 void image_render_img() {
     SDL_Rect img_dest_rect = image_get_offset_rect();
