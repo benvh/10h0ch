@@ -12,9 +12,10 @@ deps := $(patsubst .o/%,.d/%,$(objs:.o=.d))
 CC = clang
 PKGCONFIG := pkg-config
 
-CCFLAGS = -Wall -g \
-		  $(shell $(PKGCONFIG) --cflags sdl2 SDL2_image SDL2_ttf) \
-		  $(shell $(PKGCONFIG) --cflags fontconfig)
+CFLAGS = -Wall -g -std=c99 -pedantic \
+		 -I $(src_dir) \
+		 $(shell $(PKGCONFIG) --cflags sdl2 SDL2_image SDL2_ttf) \
+		 $(shell $(PKGCONFIG) --cflags fontconfig)
 
 LDFLAGS = $(shell $(PKGCONFIG) --libs sdl2 SDL2_image SDL2_ttf) \
 		  $(shell $(PKGCONFIG) --libs fontconfig)

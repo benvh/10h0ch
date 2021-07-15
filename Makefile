@@ -3,18 +3,18 @@ include config.mk
 all: $(target)
 
 $(target): $(objs)
-	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 $(dep_dir)/%.d: %.c
 	@mkdir -p $(@D); \
 		rm -f $@; \
-		$(CC) $(CCFLAGS) -E -MM -MP -MF $@__ $<; \
+		$(CC) $(CFLAGS) -E -MM -MP -MF $@__ $<; \
 		sed 's,\($(basename $(<F))\)\.o[ :]*,$(obj_dir)/$(<D)/\1.o $@: ,g' $@__ > $@; \
 		rm -f $@__
 
 $(obj_dir)/%.o:
 	@mkdir -p $(@D)
-	$(CC) $(CCFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(dep_dir)/*
@@ -22,6 +22,6 @@ clean:
 	rm -f $(target)
 
 
-.PHONY: all clean depend
+.PHONY: all clean
 
 include $(deps)
