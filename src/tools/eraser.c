@@ -1,4 +1,4 @@
-#include "eraser.h"
+#include "tool.h"
 #include "image.h"
 #include "rendering.h"
 
@@ -7,7 +7,18 @@ static char status_bar_buff[32] = "\0";
 static uint8_t eraser_size = 8;
 
 
-uint8_t tools_mode_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
+
+uint8_t tools_tool_eraser_handle_activate() {
+    SDL_ShowCursor(SDL_DISABLE);
+    return 1;
+}
+
+uint8_t tools_tool_eraser_handle_deactivate() {
+    SDL_ShowCursor(SDL_ENABLE);
+    return 1;
+}
+
+uint8_t tools_tool_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
     if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     switch(evt->keysym.sym) {
@@ -25,7 +36,7 @@ uint8_t tools_mode_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
     return 0;
 }
 
-uint8_t tools_mode_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
+uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     // TODO: render the "eraser ghost"
 
     // do nothing if the left mouse button is not down...
@@ -49,16 +60,16 @@ uint8_t tools_mode_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     return 1;
 }
 
-uint8_t tools_mode_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
+uint8_t tools_tool_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-char* tools_mode_eraser_provide_status_bar_text() {
+char* tools_tool_eraser_provide_status_bar_text() {
     sprintf(status_bar_buff, "[eraser] | eraser size = %d", eraser_size);
     return status_bar_buff;
 }
 
-void tools_mode_eraser_render_ghost() {
+void tools_tool_eraser_render_ghost() {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
     SDL_Rect point_rect = { .x = mouse_x-(eraser_size>>1), .y = mouse_y-(eraser_size>>1), .w = eraser_size, .h = eraser_size };
@@ -67,3 +78,16 @@ void tools_mode_eraser_render_ghost() {
     SDL_RenderDrawRect(rend, &point_rect);
     SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
 }
+
+
+// --------
+
+tool_t tools_tool_eraser = {
+    .activate_handler = tools_tool_eraser_handle_activate,
+    .deactivate_handler = tools_tool_eraser_handle_deactivate,
+    .keydown_handler = tools_tool_eraser_handle_keydown,
+    .mouse_motion_handler = tools_tool_eraser_handle_mouse_motion,
+    .mouse_click_handler = tools_tool_eraser_handle_mouse_click,
+    .status_bar_text_provider = tools_tool_eraser_provide_status_bar_text,
+    .ghost_renderer = tools_tool_eraser_render_ghost,
+};
