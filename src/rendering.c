@@ -28,6 +28,9 @@ void rendering_init() {
         SDL_Quit();
         exit(-1);
     }
+
+    // hide the cursor
+    SDL_ShowCursor(SDL_DISABLE);
 }
 
 void rendering_deinit() {

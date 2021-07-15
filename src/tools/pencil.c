@@ -135,7 +135,7 @@ void tools_mode_pencil_render_ghost() {
     SDL_GetMouseState(&mouse_x, &mouse_y);
     SDL_Rect point_rect = { .x = mouse_x-(pencil_size>>1), .y = mouse_y-(pencil_size>>1), .w = pencil_size, .h = pencil_size };
     SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(rend, 0, 0, 0, 0x80);
+    SDL_SetRenderDrawColor(rend, 0, 0, 0, 0xa0);
     SDL_RenderDrawRect(rend, &point_rect);
     SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
 }
