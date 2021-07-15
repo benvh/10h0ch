@@ -1,0 +1,5 @@
+.d/
+.o/
+.ccls-cache/
+bin/
+compile_commands.json
