@@ -3,6 +3,7 @@ include config.mk
 all: $(target)
 
 $(target): $(objs)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 $(dep_dir)/%.d: %.c
