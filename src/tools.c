@@ -54,6 +54,13 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 tools_mode_status_bar_text_provider = tools_mode_pencil_provide_status_bar_text;
                 return 1;
                 break;
+
+            case SDLK_e:
+                tools_current_mode = TOOL_MODE_ERASER;
+                tools_mode_keydown_handler = tools_mode_eraser_handle_keydown;
+                tools_mode_mouse_motion_handler = tools_mode_eraser_handle_mouse_motion;
+                tools_mode_mouse_click_handler = tools_mode_eraser_handle_mouse_click;
+                tools_mode_status_bar_text_provider = tools_mode_eraser_provide_status_bar_text;
         }
     } else {
         return mode_handler_result;
