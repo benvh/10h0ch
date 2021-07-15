@@ -11,3 +11,31 @@ stdout as a PNG file.
 ```
 10h0ch <path/to/some/image.png > annotated-image.png
 ```
+
+### keybinds
+
+keybinds are hardcoded (for now).
+
+note that "exit" only works in "normal mode".
+
+| tool/mode   | key  |
+| ----        | ---  |
+| exit        | q    |
+| normal      | ESC  |
+| pencil      | p    |
+| eraser      | e    |
+
+#### pencil tool
+
+| action            | key |
+| --                | --  |
+| change color      | c   |
+| decrease pen size | [   |
+| increase pen size | ]   |
+
+#### eraser tool
+
+| action               | key |
+| --                   | --  |
+| decrease eraser size | [   |
+| increase eraser size | ]   |
