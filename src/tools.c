@@ -47,6 +47,7 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
     if (mode_handler_result <= 0) {
         switch(evt->keysym.sym) {
             case SDLK_ESCAPE:
+                SDL_ShowCursor(SDL_ENABLE);
                 tools_current_mode = TOOL_MODE_NONE;
                 tools_mode_keydown_handler = tools_mode_none_handle_keydown;
                 tools_mode_mouse_motion_handler = tools_mode_none_handle_mouse_motion;
@@ -56,6 +57,7 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 return 1;
 
             case SDLK_p:
+                SDL_ShowCursor(SDL_DISABLE);
                 tools_current_mode = TOOL_MODE_PENCIL;
                 tools_mode_keydown_handler = tools_mode_pencil_handle_keydown;
                 tools_mode_mouse_motion_handler = tools_mode_pencil_handle_mouse_motion;
@@ -65,6 +67,7 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 return 1;
 
             case SDLK_e:
+                SDL_ShowCursor(SDL_DISABLE);
                 tools_current_mode = TOOL_MODE_ERASER;
                 tools_mode_keydown_handler = tools_mode_eraser_handle_keydown;
                 tools_mode_mouse_motion_handler = tools_mode_eraser_handle_mouse_motion;
