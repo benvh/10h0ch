@@ -31,6 +31,13 @@ typedef uint8_t (*tools_mouse_click_handler)(SDL_MouseButtonEvent* evt);
  */
 typedef char* (*tools_status_bar_text_provider)();
 
+/**
+ * a tool based "ghost renderer" function which will try to render
+ * a "ghost" of the active tool so that users can, for example, visually
+ * assess this size of the pen/eraser
+ */
+typedef void (*tools_ghost_renderer)();
+
 
 typedef enum {
     TOOL_MODE_NONE,
@@ -56,6 +63,8 @@ extern tools_mouse_click_handler  tools_mode_mouse_click_handler;
 
 extern tools_status_bar_text_provider tools_mode_status_bar_text_provider;
 
+extern tools_ghost_renderer tools_mode_ghost_renderer;
+
 
 /**
  * initialize the tools module
@@ -75,6 +84,12 @@ void tools_deinit();
 char* tools_get_status_bar_text();
 
 /**
+ * renders the active tool's ghost to the window. keep in mind some tools
+ * have no ghost and in  that case nothing will be rendered...
+ */
+void tools_render_tool_ghost();
+
+/**
  * main tools keydown event handler
  */
 uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt);
@@ -89,5 +104,6 @@ uint8_t tools_handle_mouse_motion(SDL_MouseMotionEvent* evt);
  * main tools mouse button event handler
  */
 uint8_t tools_handle_mouse_click(SDL_MouseButtonEvent* evt);
+
 
 #endif

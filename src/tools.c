@@ -16,7 +16,11 @@ tools_keydown_handler           tools_mode_keydown_handler;
 tools_mouse_motion_handler      tools_mode_mouse_motion_handler;
 tools_mouse_click_handler       tools_mode_mouse_click_handler;
 tools_status_bar_text_provider  tools_mode_status_bar_text_provider;
+tools_ghost_renderer            tools_mode_ghost_renderer;
 
+void tools_ghost_noop_renderer() {
+    // noop renderer for tools that dont require a ghost (e.g. the 'none' tool)
+}
 
 void tools_init() {
     tools_current_mode = TOOL_MODE_NONE;
@@ -24,6 +28,7 @@ void tools_init() {
     tools_mode_mouse_motion_handler = tools_mode_none_handle_mouse_motion;
     tools_mode_mouse_click_handler = tools_mode_none_handle_mouse_click;
     tools_mode_status_bar_text_provider = tools_mode_none_provide_status_bar_text;
+    tools_mode_ghost_renderer = tools_ghost_noop_renderer;
 }
 
 void tools_deinit() {
@@ -31,6 +36,10 @@ void tools_deinit() {
 
 char* tools_get_status_bar_text() {
     return tools_mode_status_bar_text_provider();
+}
+
+void tools_render_tool_ghost() {
+    tools_mode_ghost_renderer();
 }
 
 uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
@@ -43,8 +52,8 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 tools_mode_mouse_motion_handler = tools_mode_none_handle_mouse_motion;
                 tools_mode_mouse_click_handler = tools_mode_none_handle_mouse_click;
                 tools_mode_status_bar_text_provider = tools_mode_none_provide_status_bar_text;
+                tools_mode_ghost_renderer = tools_ghost_noop_renderer;
                 return 1;
-                break;
 
             case SDLK_p:
                 tools_current_mode = TOOL_MODE_PENCIL;
@@ -52,8 +61,8 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 tools_mode_mouse_motion_handler = tools_mode_pencil_handle_mouse_motion;
                 tools_mode_mouse_click_handler = tools_mode_pencil_handle_mouse_click;
                 tools_mode_status_bar_text_provider = tools_mode_pencil_provide_status_bar_text;
+                tools_mode_ghost_renderer = tools_mode_pencil_render_ghost;
                 return 1;
-                break;
 
             case SDLK_e:
                 tools_current_mode = TOOL_MODE_ERASER;
@@ -61,6 +70,8 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
                 tools_mode_mouse_motion_handler = tools_mode_eraser_handle_mouse_motion;
                 tools_mode_mouse_click_handler = tools_mode_eraser_handle_mouse_click;
                 tools_mode_status_bar_text_provider = tools_mode_eraser_provide_status_bar_text;
+                tools_mode_ghost_renderer = tools_mode_eraser_render_ghost;
+                return 1;
         }
     } else {
         return mode_handler_result;

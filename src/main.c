@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
         rendering_wipe_screen();
 
         image_render_img();
+        tools_render_tool_ghost();
         status_bar_render_bar();
 
         rendering_swap_screen();

@@ -11,5 +11,6 @@ uint8_t tools_mode_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt);
 
 char* tools_mode_eraser_provide_status_bar_text();
 
+void tools_mode_eraser_render_ghost();
 
 #endif
