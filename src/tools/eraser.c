@@ -41,7 +41,7 @@ uint8_t tools_mode_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     SDL_SetRenderTarget(rend, img_edit_texture);
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
 
-    SDL_Rect point_rect = { .x = edit_x-(eraser_size>1), .y = edit_y-(eraser_size>1), .w = eraser_size, .h = eraser_size };
+    SDL_Rect point_rect = { .x = edit_x-(eraser_size>>1), .y = edit_y-(eraser_size>>1), .w = eraser_size, .h = eraser_size };
     SDL_RenderFillRect(rend, &point_rect);
 
     SDL_SetRenderTarget(rend, NULL);

@@ -91,6 +91,8 @@ uint8_t tools_mode_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
 }
 
 uint8_t tools_mode_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
+    // TODO: render the "pencil ghost"
+
     // do nothing if the left mouse button is not down...
     if ((evt->state & SDL_BUTTON_LMASK) != SDL_BUTTON_LMASK) return 0;
 
@@ -104,11 +106,10 @@ uint8_t tools_mode_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     SDL_SetRenderTarget(rend, img_edit_texture);
     SDL_SetRenderDrawColor(rend, pencil_color >> 24, pencil_color >> 16, pencil_color >> 8, pencil_color & 0xff);
 
-    SDL_Rect point_rect = { .x = edit_x-(pencil_size>1), .y = edit_y-(pencil_size>1), .w = pencil_size, .h = pencil_size };
+    SDL_Rect point_rect = { .x = edit_x-(pencil_size>>1), .y = edit_y-(pencil_size>>1), .w = pencil_size, .h = pencil_size };
     SDL_RenderFillRect(rend, &point_rect);
 
     SDL_SetRenderTarget(rend, NULL);
-
 
     return 1;
 }
