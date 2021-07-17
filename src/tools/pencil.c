@@ -40,7 +40,7 @@ static void wipe_pencil_edit_texture() {
     SDL_SetRenderTarget(rend, NULL);
 }
 
-uint8_t tools_tool_pencil_handle_activate() {
+static uint8_t tools_tool_pencil_handle_activate() {
     SDL_ShowCursor(SDL_DISABLE);
 
     // lazy initialize internal pencil_edit_texture
@@ -54,12 +54,12 @@ uint8_t tools_tool_pencil_handle_activate() {
     return 1;
 }
 
-uint8_t tools_tool_pencil_handle_deactivate() {
+static uint8_t tools_tool_pencil_handle_deactivate() {
     SDL_ShowCursor(SDL_ENABLE);
     return 1;
 }
 
-uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
+static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
     if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     // if we're in "color input mode" we'll basically swallow all keypresses as well
@@ -118,7 +118,7 @@ uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
     return 0;
 }
 
-uint8_t tools_tool_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
+static uint8_t tools_tool_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     // TODO: render the "pencil ghost"
 
     // do nothing if the left mouse button is not down...
@@ -144,7 +144,7 @@ uint8_t tools_tool_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     return 1;
 }
 
-uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
+static uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     if (evt->button == SDL_BUTTON_LEFT && evt->state == SDL_PRESSED) {
 
     } else if (evt->button == SDL_BUTTON_LEFT && evt->state == SDL_RELEASED) {
@@ -163,7 +163,7 @@ uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-char* tools_tool_pencil_provide_status_bar_text() {
+static char* tools_tool_pencil_provide_status_bar_text() {
     if (input_mode == INPUT_MODE_NONE) {
         sprintf(status_bar_buff, "[pencil] | color = #%06x, alpha = 0x%02x | pencil size = %d", pencil_color>>8, pencil_color & 0xff, pencil_size);
     } else if (input_mode == INPUT_MODE_INPUT_COLOR) {
@@ -173,7 +173,7 @@ char* tools_tool_pencil_provide_status_bar_text() {
     return status_bar_buff;
 }
 
-void tools_tool_pencil_render_ghost() {
+static void tools_tool_pencil_render_ghost() {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 

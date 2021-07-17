@@ -14,7 +14,7 @@ static void wipe_eraser_edit_texture() {
     SDL_SetRenderTarget(rend, NULL);
 }
 
-uint8_t tools_tool_eraser_handle_activate() {
+static uint8_t tools_tool_eraser_handle_activate() {
     SDL_ShowCursor(SDL_DISABLE);
 
     // lazyily initialize our edit texture
@@ -28,12 +28,12 @@ uint8_t tools_tool_eraser_handle_activate() {
     return 1;
 }
 
-uint8_t tools_tool_eraser_handle_deactivate() {
+static uint8_t tools_tool_eraser_handle_deactivate() {
     SDL_ShowCursor(SDL_ENABLE);
     return 1;
 }
 
-uint8_t tools_tool_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
+static uint8_t tools_tool_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
     if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     switch(evt->keysym.sym) {
@@ -51,7 +51,7 @@ uint8_t tools_tool_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
     return 0;
 }
 
-uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
+static uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     // do nothing if the left mouse button is not down...
     if ((evt->state & SDL_BUTTON_LMASK) != SDL_BUTTON_LMASK) return 0;
 
@@ -71,7 +71,7 @@ uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
     return 1;
 }
 
-uint8_t tools_tool_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
+static uint8_t tools_tool_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
 
     if (evt->button == SDL_BUTTON_LEFT && evt->state == SDL_RELEASED) {
         // commit our erase stroke to img_edit
@@ -89,12 +89,12 @@ uint8_t tools_tool_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-char* tools_tool_eraser_provide_status_bar_text() {
+static char* tools_tool_eraser_provide_status_bar_text() {
     sprintf(status_bar_buff, "[eraser] | eraser size = %d", eraser_size);
     return status_bar_buff;
 }
 
-void tools_tool_eraser_render_ghost() {
+static void tools_tool_eraser_render_ghost() {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
