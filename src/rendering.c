@@ -56,9 +56,8 @@ void rendering_draw_circle(uint32_t circle_x, uint32_t circle_y, uint32_t radius
     SDL_SetRenderDrawColor(rend, r, g, b, a);
     SDL_SetRenderDrawBlendMode(rend, blend_mode);
 
-    int32_t radius12 = (radius>>1);
-    int32_t center_x = circle_x + radius12;
-    int32_t center_y = circle_y + radius12;
+    int32_t center_x = circle_x + radius;
+    int32_t center_y = circle_y + radius;
 
     int32_t x = 0;
     int32_t y = radius;
@@ -95,9 +94,8 @@ void rendering_fill_circle(uint32_t circle_x, uint32_t circle_y, uint32_t radius
     SDL_SetRenderDrawColor(rend, r, g, b, a);
     SDL_SetRenderDrawBlendMode(rend, blend_mode);
 
-    int32_t radius12 = (radius>>1);
-    int32_t center_x = circle_x + radius12;
-    int32_t center_y = circle_y + radius12;
+    int32_t center_x = circle_x + radius;
+    int32_t center_y = circle_y + radius;
 
     int32_t x = 0;
     int32_t y = radius;

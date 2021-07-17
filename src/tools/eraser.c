@@ -62,7 +62,7 @@ static uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) 
     if (edit_x < 0 || edit_x > img_rect.w) return 0; // out of bounds, can't draw outside our original image...
     if (edit_y < 0 || edit_y > img_rect.h) return 0; // out of bounds, can't draw outside our original image...
 
-    SDL_Rect point_rect = { .x = edit_x-(eraser_size>>1), .y = edit_y-(eraser_size>>1), .w = eraser_size, .h = eraser_size };
+    SDL_Rect point_rect = { .x = edit_x-eraser_size, .y = edit_y-eraser_size, .w = eraser_size, .h = eraser_size };
 
     SDL_SetRenderTarget(rend, eraser_edit_texture);
     rendering_fill_circle(point_rect.x, point_rect.y, eraser_size, 0x00, 0x00, 0x00, 0x00, SDL_BLENDMODE_NONE);
@@ -109,7 +109,7 @@ static void tools_tool_eraser_render_ghost() {
     SDL_RenderCopy(rend, eraser_edit_texture, NULL, &img_offset_rect);
 
     // drawer the actual eraser tool ghost so you can see what you're doing
-    SDL_Rect point_rect = { .x = mouse_x-(eraser_size>>1), .y = mouse_y-(eraser_size>>1), .w = eraser_size, .h = eraser_size };
+    SDL_Rect point_rect = { .x = mouse_x-eraser_size, .y = mouse_y-eraser_size, .w = eraser_size, .h = eraser_size };
     rendering_draw_circle(point_rect.x, point_rect.y, eraser_size, 0, 0, 0, 0xa0, SDL_BLENDMODE_BLEND);
 }
 

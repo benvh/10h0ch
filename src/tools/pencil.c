@@ -132,7 +132,7 @@ static uint8_t tools_tool_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) 
     if (edit_y < 0 || edit_y > img_rect.h) return 0; // out of bounds, can't draw outside our original image...
 
     // the "point" we're about to draw
-    SDL_Rect point_rect = { .x = edit_x-(pencil_size>>1), .y = edit_y-(pencil_size>>1), .w = pencil_size, .h = pencil_size };
+    SDL_Rect point_rect = { .x = edit_x-pencil_size, .y = edit_y-pencil_size, .w = pencil_size, .h = pencil_size };
 
     // rendering our stroke to pencil_edit_texture without any blending
     SDL_SetRenderTarget(rend, pencil_edit_texture);
@@ -185,7 +185,7 @@ static void tools_tool_pencil_render_ghost() {
     SDL_RenderCopy(rend, pencil_edit_texture, NULL, &img_offset_rect);
 
     // render the actual pencil ghost so you can see where you'll be drawing
-    SDL_Rect point_rect = { .x = mouse_x-(pencil_size>>1), .y = mouse_y-(pencil_size>>1), .w = pencil_size, .h = pencil_size };
+    SDL_Rect point_rect = { .x = mouse_x-pencil_size, .y = mouse_y-pencil_size, .w = pencil_size, .h = pencil_size };
     rendering_draw_circle(point_rect.x, point_rect.y, pencil_size, 0, 0, 0, 0xa0, SDL_BLENDMODE_BLEND);
 }
 

@@ -128,15 +128,14 @@ static uint8_t marker_handle_mouse_click(SDL_MouseButtonEvent* evt) {
             SDL_SetRenderTarget(rend, img_edit_texture);
             
             // draw the marker circle
-            int circle_radius = marker_size;
             SDL_Rect marker_circle_rect = { 
-                .x = marker_edit_rect.x - (circle_radius>>1),
-                .y = marker_edit_rect.y - (circle_radius>>1)
+                .x = marker_edit_rect.x - marker_size,
+                .y = marker_edit_rect.y - marker_size
             };
             rendering_fill_circle(
                     marker_circle_rect.x,
                     marker_circle_rect.y,
-                    circle_radius,
+                    marker_size,
                     marker_color>>24, marker_color>>16, marker_color>>8, marker_color&0xff,
                     SDL_BLENDMODE_BLEND);
 
@@ -182,7 +181,7 @@ static void marker_render_ghost() {
     SDL_SetRenderTarget(rend, NULL);
 
     // render the actual pencil ghost so you can see where you'll be placing a marker
-    SDL_Rect point_rect = { .x = mouse_x-(marker_size>>1), .y = mouse_y-(marker_size>>1), .w = marker_size, .h = marker_size };
+    SDL_Rect point_rect = { .x = mouse_x-marker_size, .y = mouse_y-marker_size, .w = marker_size, .h = marker_size };
     rendering_draw_circle(point_rect.x, point_rect.y, marker_size, 0, 0, 0, 0xa0, SDL_BLENDMODE_BLEND);
 }
 
