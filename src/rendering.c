@@ -42,10 +42,101 @@ void rendering_handle_window_resized() {
 }
 
 void rendering_wipe_screen() {
+    SDL_SetRenderTarget(rend, NULL);
+    SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(rend, 0x44, 0x44, 0x44, 0xff);
     SDL_RenderClear(rend);
 }
 
 void rendering_swap_screen() {
     SDL_RenderPresent(rend);
+}
+
+void rendering_draw_circle(uint32_t circle_x, uint32_t circle_y, uint32_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a, SDL_BlendMode blend_mode) {
+    SDL_SetRenderDrawColor(rend, r, g, b, a);
+    SDL_SetRenderDrawBlendMode(rend, blend_mode);
+
+    int32_t radius12 = (radius>>1);
+    int32_t center_x = circle_x + radius12;
+    int32_t center_y = circle_y + radius12;
+
+    int32_t x = 0;
+    int32_t y = radius;
+    int32_t d = 3 - 2 * radius;
+
+    SDL_RenderDrawPoint(rend, center_x + x,  center_y + y);
+    SDL_RenderDrawPoint(rend, center_x + y,  center_y + x);
+    SDL_RenderDrawPoint(rend, center_x + -x, center_y + -y);
+    SDL_RenderDrawPoint(rend, center_x + -y, center_y + -x);
+
+    while (y >= x) {
+        x++;
+        if (d > 0) {
+            y--;
+            d = d + 4 * (x - y) + 10;
+        } else {
+            d = d + 4 * x + 6;
+        }
+
+        SDL_RenderDrawPoint(rend, center_x + x,  center_y + -y);
+        SDL_RenderDrawPoint(rend, center_x + x,  center_y + y);
+        SDL_RenderDrawPoint(rend, center_x + -x, center_y + -y);
+        SDL_RenderDrawPoint(rend, center_x + -x, center_y + y);
+        SDL_RenderDrawPoint(rend, center_x + y,  center_y + -x);
+        SDL_RenderDrawPoint(rend, center_x + y,  center_y + x);
+        SDL_RenderDrawPoint(rend, center_x + -y, center_y + -x);
+        SDL_RenderDrawPoint(rend, center_x + -y, center_y + x);
+    }
+
+    SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
+}
+
+void rendering_fill_circle(uint32_t circle_x, uint32_t circle_y, uint32_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a, SDL_BlendMode blend_mode) {
+    SDL_SetRenderDrawColor(rend, r, g, b, a);
+    SDL_SetRenderDrawBlendMode(rend, blend_mode);
+
+    int32_t radius12 = (radius>>1);
+    int32_t center_x = circle_x + radius12;
+    int32_t center_y = circle_y + radius12;
+
+    int32_t x = 0;
+    int32_t y = radius;
+    int32_t d = 3 - 2 * radius;
+
+    SDL_RenderDrawLine(rend, center_x, center_y, center_x, center_y - radius);
+    SDL_RenderDrawLine(rend, center_x, center_y, center_x, center_y + radius);
+    SDL_RenderDrawLine(rend, center_x, center_y, center_x - radius, center_y);
+    SDL_RenderDrawLine(rend, center_x, center_y, center_x + radius, center_y);
+    
+    while (y >= x) {
+        x++;
+        if (d > 0) {
+            y--;
+            d = d + 4 * (x - y) + 10;
+        } else {
+            d = d + 4 * x + 6;
+        }
+
+        // dont draw 0-length lines which cause artifacts
+        if (-y + x < 0) {
+            // top-right quadrant
+            SDL_RenderDrawLine(rend, center_x + x,  center_y + -y, center_x + x, center_y + -x);
+            SDL_RenderDrawLine(rend, center_x + y,  center_y + -x, center_x + x + 1, center_y + -x);
+
+            // bottom-right quadrant
+            SDL_RenderDrawLine(rend, center_x + x,  center_y + y, center_x + x, center_y + x);
+            SDL_RenderDrawLine(rend, center_x + y,  center_y + x, center_x + x + 1, center_y + x);
+
+
+            // bottom-left quadrant
+            SDL_RenderDrawLine(rend, center_x + -x, center_y + y, center_x + -x, center_y + x);
+            SDL_RenderDrawLine(rend, center_x + -y, center_y + x, center_x + -x - 1, center_y + x);;
+
+            // top-left quadrant
+            SDL_RenderDrawLine(rend, center_x + -x, center_y + -y, center_x + -x, center_y + -x);
+            SDL_RenderDrawLine(rend, center_x + -y, center_y + -x, center_x + -x - 1, center_y + -x);
+        }
+    }
+    
+    SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
 }
