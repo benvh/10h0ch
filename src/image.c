@@ -92,8 +92,14 @@ SDL_Surface* image_read_img_from_stdin() {
     // initialize img_orig_... and img_edit_... vars
     img_orig_surface = img_surface;
     img_orig_texture = SDL_CreateTextureFromSurface(rend, img_orig_surface);
+    SDL_SetTextureBlendMode(img_orig_texture, SDL_BLENDMODE_NONE);
+
     img_edit_texture = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, img_orig_surface->w, img_orig_surface->h);
-    SDL_SetTextureBlendMode(img_edit_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(img_edit_texture, SDL_BLENDMODE_NONE);
+    SDL_SetRenderTarget(rend, img_edit_texture);
+    SDL_RenderCopy(rend, img_orig_texture, NULL, NULL);
+
+    SDL_SetRenderTarget(rend, NULL);
 
     return img_surface;
 }
@@ -145,8 +151,9 @@ void image_write_img_to_stdout() {
 
 void image_render_img() {
     SDL_Rect img_dest_rect = image_get_offset_rect();
-    SDL_RenderCopy(rend, img_orig_texture, &(img_orig_surface->clip_rect), &img_dest_rect);
-    SDL_RenderCopy(rend, img_edit_texture, &(img_orig_surface->clip_rect), &img_dest_rect);
+    SDL_SetRenderTarget(rend, NULL);
+    SDL_RenderCopy(rend, img_orig_texture, NULL, &img_dest_rect);
+    SDL_RenderCopy(rend, img_edit_texture, NULL, &img_dest_rect);
 }
 
 SDL_Rect image_get_offset_rect() {

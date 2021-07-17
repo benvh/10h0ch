@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
             if (event_handler_result == 0) {
                 if (evt.key.keysym.sym == SDLK_q) break;
             }
-        } else if (evt.type == SDL_MOUSEBUTTONDOWN) {
+        } else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
             tools_handle_mouse_click(&evt.button);
         } else if (evt.type ==  SDL_MOUSEMOTION) {
             tools_handle_mouse_motion(&evt.motion);
