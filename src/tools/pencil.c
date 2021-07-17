@@ -2,6 +2,17 @@
 #include "rendering.h"
 #include "image.h"
 #include "hex.h"
+#include "input_util.h"
+
+typedef enum {
+    PENCIL_MODE_DRAW,
+    PENCIL_MODE_INPUT_COLOR,
+    PENCIL_MODE_INPUT_ALPHA
+} pencil_mode_t;
+
+static pencil_mode_t pencil_mode;
+
+static input_util_t pencil_input_util;
 
 static char status_bar_buff[128] = "\0";
 
@@ -12,25 +23,6 @@ static uint32_t pencil_color = 0xffffffff;
 static SDL_Texture* pencil_edit_texture = NULL;
 
 
-// text input related stuff specifically used for changing pencil
-// color as  far as the pencil tool goes...
-typedef enum {
-    INPUT_MODE_NONE,
-    INPUT_MODE_INPUT_COLOR
-} input_mode_t;
-
-static input_mode_t input_mode = 0;
-
-static char input_buff[16] = "\0";
-
-static char* input_buff_ptr = input_buff;
-
-static void clear_input_buffer() {
-    memset(input_buff, '\0', 16);
-    input_buff_ptr = input_buff;
-}
-
-// --
 
 static void wipe_pencil_edit_texture() {
     SDL_SetRenderTarget(rend, pencil_edit_texture);
@@ -42,6 +34,7 @@ static void wipe_pencil_edit_texture() {
 
 static uint8_t tools_tool_pencil_handle_activate() {
     SDL_ShowCursor(SDL_DISABLE);
+    pencil_mode = PENCIL_MODE_DRAW;
 
     // lazy initialize internal pencil_edit_texture
     if (pencil_edit_texture == NULL) {
@@ -63,35 +56,19 @@ static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
     if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     // if we're in "color input mode" we'll basically swallow all keypresses as well
-    if (input_mode == INPUT_MODE_INPUT_COLOR) {
+    if (pencil_mode == PENCIL_MODE_INPUT_COLOR || pencil_mode == PENCIL_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
             // escape cancel color input
-            input_mode = INPUT_MODE_NONE;
-
-        } else if ((evt->keysym.sym >= '0' && evt->keysym.sym <= '9') || (evt->keysym.sym >= 'a' && evt->keysym.sym <= 'f') || (evt->keysym.sym >= 'A' && evt->keysym.sym <= 'F')) {
-            // valid hex chars will be appended to our input buffer
-            if (input_buff_ptr != (input_buff + 8)) *(input_buff_ptr++) = evt->keysym.sym;
-
-        } else if (evt->keysym.sym == SDLK_BACKSPACE) {
-            // backspace removes chars from our input buffer...
-            if (input_buff_ptr != input_buff) *(--input_buff_ptr) = '\0';
+            pencil_mode = PENCIL_MODE_DRAW;
 
         } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) {
             // commit color change
+            if (pencil_mode == PENCIL_MODE_INPUT_COLOR) pencil_color = (hex_parse_hex_str(pencil_input_util.buff) << 8) | (pencil_color & 0xff) ;
+            else if (pencil_mode == PENCIL_MODE_INPUT_ALPHA) pencil_color = (pencil_color&(~0xff)) | (hex_parse_hex_str(pencil_input_util.buff)&0xff);
+            pencil_mode = PENCIL_MODE_DRAW;
 
-            // we'll check the length of the color that was entered
-            // if it's only 3 bytes we'll assume those are our RGB colors
-            // and we'll set our A(lpha) channel to 0xFF. If the entered
-            // color is 4 bytes long the full RGBA value was entered which
-            // we'll use as-is
-
-            // NOTE: what about "shorter" color values? e.g. only a single
-            // byte was provided
-            pencil_color = hex_parse_hex_str(input_buff);
-            if (strlen(input_buff) == 6) {
-                pencil_color = (pencil_color << 8) | 0xff;
-            }
-            input_mode = INPUT_MODE_NONE;
+        } else {
+            input_util_handle_keydown(&pencil_input_util, evt);
         }
 
         return 1;
@@ -108,19 +85,23 @@ static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
             pencil_size = pencil_size == 0xff ? 0xff : pencil_size + 1;
             return 1;
 
+        case SDLK_a:
+            pencil_mode = PENCIL_MODE_INPUT_ALPHA;
+            input_util_reset(&pencil_input_util, 2, input_util_hex_key_filter);
+            break;
+
         case SDLK_c:
             // change pencil color
-            clear_input_buffer();
-            input_mode = INPUT_MODE_INPUT_COLOR;
+            pencil_mode = PENCIL_MODE_INPUT_COLOR;
+            input_util_reset(&pencil_input_util, 6, input_util_hex_key_filter);
             return 1;
+
     }
 
     return 0;
 }
 
 static uint8_t tools_tool_pencil_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
-    // TODO: render the "pencil ghost"
-
     // do nothing if the left mouse button is not down...
     if ((evt->state & SDL_BUTTON_LMASK) != SDL_BUTTON_LMASK) return 0;
 
@@ -164,10 +145,12 @@ static uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
 }
 
 static char* tools_tool_pencil_provide_status_bar_text() {
-    if (input_mode == INPUT_MODE_NONE) {
+    if (pencil_mode == PENCIL_MODE_DRAW) {
         sprintf(status_bar_buff, "[pencil] | color = #%06x | alpha = #%02x | pencil size = %d", pencil_color>>8, pencil_color & 0xff, pencil_size);
-    } else if (input_mode == INPUT_MODE_INPUT_COLOR) {
-        sprintf(status_bar_buff, "[pencil] | set color: #%s_", input_buff);
+    } else if (pencil_mode == PENCIL_MODE_INPUT_COLOR) {
+        sprintf(status_bar_buff, "[pencil] | set color: #%s_", pencil_input_util.buff);
+    } else if (pencil_mode == PENCIL_MODE_INPUT_ALPHA) {
+        sprintf(status_bar_buff, "[pencil] | set alpha: #%s_", pencil_input_util.buff);
     }
 
     return status_bar_buff;

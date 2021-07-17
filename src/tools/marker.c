@@ -3,6 +3,7 @@
 #include "image.h"
 #include "hex.h"
 #include "fonts.h"
+#include "input_util.h"
 
 #define STR_ON "on"
 #define STR_OFF "off"
@@ -31,16 +32,7 @@ static uint32_t marker_number = 1;
 
 static uint32_t marker_size = 12;
 
-
-
-static char input_buff[128];
-
-static char* input_buff_ptr = input_buff;
-
-static void input_buff_clear() {
-    memset(input_buff, '\0', 128);
-    input_buff_ptr = input_buff;
-}
+static input_util_t marker_input_util;
 
 
 
@@ -73,9 +65,11 @@ static uint8_t marker_handle_keydown(SDL_KeyboardEvent* evt) {
                 marker_number = 1;
                 return 1;
             case SDLK_a:
+                input_util_reset(&marker_input_util, 2, input_util_hex_key_filter);
                 marker_mode = MARKER_MODE_INPUT_ALPHA;
                 return 1;
             case SDLK_c:
+                input_util_reset(&marker_input_util, 6, input_util_hex_key_filter);
                 marker_mode = MARKER_MODE_INPUT_COLOR;
                 return 1;
             case SDLK_i:
@@ -86,22 +80,15 @@ static uint8_t marker_handle_keydown(SDL_KeyboardEvent* evt) {
     } else if (marker_mode == MARKER_MODE_INPUT_COLOR || marker_mode == MARKER_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
             // escape cancel color input
-            input_buff_clear();
             marker_mode = MARKER_MODE_PLACE;
-        } else if (evt->keysym.sym == SDLK_BACKSPACE) {
-            // backspace removes chars from our input buffer...
-            if (input_buff_ptr != input_buff) *(--input_buff_ptr) = '\0';
-        } else if ((evt->keysym.sym >= '0' && evt->keysym.sym <= '9') || (evt->keysym.sym >= 'a' && evt->keysym.sym <= 'f') || (evt->keysym.sym >= 'A' && evt->keysym.sym <= 'F')) {
-            // valid hex chars will be appended to our input buffer
-            if (marker_mode == MARKER_MODE_INPUT_COLOR && input_buff_ptr != (input_buff + 6)) *(input_buff_ptr++) = evt->keysym.sym;
-            else if (marker_mode == MARKER_MODE_INPUT_ALPHA && input_buff_ptr != (input_buff + 2)) *(input_buff_ptr++) = evt->keysym.sym;
 
-        } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) { 
+        }  else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) { 
             // commit color change
-            if (marker_mode == MARKER_MODE_INPUT_COLOR) marker_color = (hex_parse_hex_str(input_buff)<<8) | (marker_color&0xff);
-            else if (marker_mode == MARKER_MODE_INPUT_ALPHA) marker_color = (marker_color&(~0xff)) | hex_parse_hex_str(input_buff);
-            input_buff_clear();
+            if (marker_mode == MARKER_MODE_INPUT_COLOR) marker_color = (hex_parse_hex_str(marker_input_util.buff)<<8) | (marker_color&0xff);
+            else if (marker_mode == MARKER_MODE_INPUT_ALPHA) marker_color = (marker_color&(~0xff)) | hex_parse_hex_str(marker_input_util.buff);
             marker_mode = MARKER_MODE_PLACE;
+        } else {
+            input_util_handle_keydown(&marker_input_util, evt);
         }
         return 1;
     }
@@ -195,10 +182,10 @@ static char* marker_provide_status_bar_text() {
                     (marker_auto_increment > 0 ? STR_ON : STR_OFF));
             break;
         case MARKER_MODE_INPUT_COLOR:
-            sprintf(marker_status_bar_buff, "[marker] | input color: #%s_", input_buff);
+            sprintf(marker_status_bar_buff, "[marker] | input color: #%s_", marker_input_util.buff);
             break;
         case MARKER_MODE_INPUT_ALPHA:
-            sprintf(marker_status_bar_buff, "[marker] | input alpha: #%s_", input_buff);
+            sprintf(marker_status_bar_buff, "[marker] | input alpha: #%s_", marker_input_util.buff);
             break;
     }
 
