@@ -189,7 +189,7 @@ static void marker_render_ghost() {
 static char* marker_provide_status_bar_text() {
     switch(marker_mode) {
         case MARKER_MODE_PLACE:
-            sprintf(marker_status_bar_buff, "[marker] | color = 0x%06x | alpha = 0x%02x | number = %d | size = %d | auto-increment = %s", 
+            sprintf(marker_status_bar_buff, "[marker] | color = #%06x | alpha = #%02x | number = %d | size = %d | auto-increment = %s", 
                     marker_color>>8, marker_color & 0xff,
                     marker_number,
                     marker_size,

@@ -165,7 +165,7 @@ static uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
 
 static char* tools_tool_pencil_provide_status_bar_text() {
     if (input_mode == INPUT_MODE_NONE) {
-        sprintf(status_bar_buff, "[pencil] | color = #%06x, alpha = 0x%02x | pencil size = %d", pencil_color>>8, pencil_color & 0xff, pencil_size);
+        sprintf(status_bar_buff, "[pencil] | color = #%06x | alpha = #%02x | pencil size = %d", pencil_color>>8, pencil_color & 0xff, pencil_size);
     } else if (input_mode == INPUT_MODE_INPUT_COLOR) {
         sprintf(status_bar_buff, "[pencil] | set color: #%s_", input_buff);
     }
