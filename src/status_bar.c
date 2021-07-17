@@ -7,7 +7,7 @@ static TTF_Font* status_bar_font = NULL;
 static SDL_Color status_bar_color = { .r = 0xff, .g = 0x0ff, .b = 0xff, .a = 0xff };
 
 void status_bar_init() {
-    status_bar_font = fonts_load_font("monospace");
+    status_bar_font = fonts_load_font("monospace", 11);
 }
 
 void status_bar_deinit() {

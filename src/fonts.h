@@ -22,7 +22,7 @@ void fonts_deinit();
  * \param pattern a font-config pattern
  * \return a TTF_Font pointer or NULL if no matching font was found
  */
-TTF_Font* fonts_load_font(const char* pattern);
+TTF_Font* fonts_load_font(const char* pattern, int pt_size);
 
 /**
  * render the provided text to an SDL_Texture. The texture must be

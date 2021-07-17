@@ -30,9 +30,9 @@ void fonts_deinit() {
 }
 
 
-TTF_Font* fonts_load_font(const char* pattern) {
+TTF_Font* fonts_load_font(const char* pattern, int pt_size) {
     char* font_path = find_font_file(pattern);
-    TTF_Font* font = TTF_OpenFont(font_path, 11);
+    TTF_Font* font = TTF_OpenFont(font_path, pt_size);
     if (font == NULL) {
         fprintf(stderr, "could not load font '%s': %s\n", pattern, TTF_GetError());
         exit(-1);
