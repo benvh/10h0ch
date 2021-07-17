@@ -39,6 +39,10 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
             case SDLK_e:
                 tools_activate_tool(&tools_tool_eraser);
                 return 1;
+
+            case SDLK_m:
+                tools_activate_tool(&tools_tool_marker);
+                return 1;
         }
     } else {
         return tool_handler_result;

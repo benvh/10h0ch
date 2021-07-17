@@ -9,6 +9,7 @@
 extern tool_t tools_tool_none;
 extern tool_t tools_tool_pencil;
 extern tool_t tools_tool_eraser;
+extern tool_t tools_tool_marker;
 
 
 /**
