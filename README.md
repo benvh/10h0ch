@@ -20,18 +20,19 @@ note that "exit" only works in "normal mode".
 
 | tool/mode   | key  |
 | ----        | ---  |
-| exit        | q    |
 | normal      | ESC  |
-| pencil      | p    |
 | eraser      | e    |
+| marker      | m    |
+| pencil      | p    |
+| exit        | q    |
 
 #### pencil tool
 
 | action            | key |
 | --                | --  |
-| change color      | c   |
 | decrease pen size | [   |
 | increase pen size | ]   |
+| change color      | c   |
 
 #### eraser tool
 
@@ -39,3 +40,17 @@ note that "exit" only works in "normal mode".
 | --                   | --  |
 | decrease eraser size | [   |
 | increase eraser size | ]   |
+
+#### marker tool
+
+| action                | key |
+| --                    | --  |
+| decrease marker size  | [   |
+| increase marker size  | ]   |
+| decrease number       | ;   |
+| increase number       | '   |
+| reset number to 1     | .   |
+| change marker alpha   | a   |
+| change marker color   | c   |
+| toggle auto-increment | i   |
+
